@@ -11,6 +11,7 @@ import android.graphics.Path;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Toast;
 
 public class GameEngine extends View {
 
@@ -46,7 +47,6 @@ public class GameEngine extends View {
 		alertDialog = new AlertDialog.Builder(context).create();
 	}
 
-	// @Override
 	public void init() {
 
 		// set up terrain colors
@@ -54,7 +54,8 @@ public class GameEngine extends View {
 		water.setARGB(255, 0, 0, 100);
 		hill.setARGB(255, 150, 113, 23);
 
-		// random number from 1 to 100
+		// random number from 1 to 100 to represent percentage of each terrain
+		// type
 		Random rand = new Random();
 		int n = rand.nextInt(100) + 1;
 
@@ -62,7 +63,10 @@ public class GameEngine extends View {
 		// creates each tile object and assigns its location and terrain type
 		for (int i = 0; i < tile.length; i++) {
 			for (int j = 0; j < tile[i].length; j++) {
-				tile[i][j] = new GameTile(xcord, ycord, xcord[5], ycord[5]);
+				//creates tile object with its location and the array of points to draw the hexagon
+				tile[i][j] = new GameTile(xcord, ycord, xcord[5], ycord[5]); 
+
+				// Sets movement and terrain type as a percentage
 				if (n > 1 && n <= 50) {
 					tile[i][j].setTerrain(grass);
 					tile[i][j].setMovement(1);
@@ -74,11 +78,15 @@ public class GameEngine extends View {
 					tile[i][j].setMovement(0.5f);
 				}
 
+				// shifts the hexagon points down to start a new row
 				for (int k = 0; k < xcord.length; k++)
 					// moves x coordinates
 					xcord[k] = xcord[k] + hexWidth;
 				n = rand.nextInt(100) + 1;
 			}
+
+			// Every other row needs to be shifted by w/2. This handles the
+			// shift
 			for (int j = 0; j < ycord.length; j++)
 				ycord[j] = ycord[j] + hexHeight;
 
@@ -129,7 +137,7 @@ public class GameEngine extends View {
 
 	public void onDraw(Canvas canvas) {
 		canvas.translate(w / 2, h / 2); // translate location (0,0) to the
-										// center of the screen
+		// center of the screen
 		canvas.save();
 
 		// if the game map is in full view, it has a fixed translation
@@ -155,8 +163,8 @@ public class GameEngine extends View {
 		}
 
 		canvas.scale(mScaleFactor, mScaleFactor, 0, 0); // scales the canvas
-														// according to the
-														// Scale Factor
+		// according to the
+		// Scale Factor
 
 		// Creates game tiles by using draw path to create hex tiles
 		for (int i = 0; i < tile.length; i++)
@@ -179,16 +187,15 @@ public class GameEngine extends View {
 
 				terrain = tile[i][j].getTerrain(); // gets terrain color
 
-				hexgrid.setStrokeWidth(2); // hexgrid color gets set with a
-											// stroke of 2 pixels thick
-				hexgrid.setStyle(Paint.Style.STROKE); // hexgred is STROKE only
-														// and does not fill the
-														// path
-				canvas.drawPath(hexpath, terrain); // draws the hex path filling
-													// the color with the
-													// terrain color
-				canvas.drawPath(hexpath, hexgrid); // draws the hex path
-													// outlining only the edge
+				// hexgrid color gets set with a stroke of 2 pixels thick
+				hexgrid.setStrokeWidth(2); 
+				// hexgred is STROKE only and does not fill the path
+				hexgrid.setStyle(Paint.Style.STROKE); 
+				// draws the hex path filling the color with the  terrain color
+				canvas.drawPath(hexpath, terrain); 
+				// draws the hex path outlining only the edge
+				canvas.drawPath(hexpath, hexgrid); 
+				
 			}
 
 		hexgrid.setStyle(Paint.Style.FILL);
@@ -199,14 +206,37 @@ public class GameEngine extends View {
 		canvas.restore();
 	}
 
+	// alert pops up whenever a character or command post is clicked
 	protected void alertbox(String title, String mymessage) {
-		String[] array = { "Move", "Attack", "Upgrade", "Cancel" };
+		final String[] alertItems = { "Move", "Attack", "Upgrade", "Cancel" };
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle("Pick an Option");
-		builder.setItems(array, new DialogInterface.OnClickListener() {
+		builder.setItems(alertItems, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// The 'which' argument contains the index position
 				// of the selected item
+				if (which == 0) {
+					Toast.makeText(
+							GameEngine.this.getContext(),
+							"You Selected : "
+									+ alertItems[which]
+									+ ". This feature has not yet been implemented",
+							Toast.LENGTH_SHORT).show();
+				} else if (which == 1) {
+					Toast.makeText(
+							GameEngine.this.getContext(),
+							"You Selected : "
+									+ alertItems[which]
+									+ ". This feature has not yet been implemented",
+							Toast.LENGTH_SHORT).show();
+				} else if (which == 2) {
+					Toast.makeText(
+							GameEngine.this.getContext(),
+							"You Selected : "
+									+ alertItems[which]
+									+ ". This feature has not yet been implemented",
+							Toast.LENGTH_SHORT).show();
+				}
 			}
 		}).show();
 	}
@@ -216,6 +246,8 @@ public class GameEngine extends View {
 		// Let the ScaleGestureDetector inspect all events.
 		mScaleDetector.onTouchEvent(ev);
 
+		// Listens to a click. If a player clicks a character or command post,
+		// calls the alertbox so a player may choose an action
 		final int action = ev.getAction();
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN: {
@@ -236,6 +268,8 @@ public class GameEngine extends View {
 			break;
 		}
 
+		// When the map is zoomed in, the player can shift tile board by sliding
+		// there finger accross the screen
 		case MotionEvent.ACTION_MOVE: {
 			final int pointerIndex = ev.findPointerIndex(mActivePointerId);
 			final float x = ev.getX(pointerIndex);

@@ -21,25 +21,6 @@ public class Character extends Activity {
 		this.xloc = xloc;
 		this.yloc = yloc;
 	}
-	
-	public boolean onTouchEvent(MotionEvent event) {
-	    float touchX = event.getX();
-	    float touchY = event.getY();
-	    switch(event.getAction()){
-	        case MotionEvent.ACTION_DOWN:
-	            System.out.println("Touching down!");
-	            //if (touchX > xloc && touchY > yloc)
-	            	//System.out.println("WEEEEEEEEEEEEE");
-	            break;
-	        case MotionEvent.ACTION_UP:
-	            System.out.println("Touching up!");
-	            break;
-	        case MotionEvent.ACTION_MOVE:
-	            System.out.println("Sliding your finger around on the screen.");
-	            break;
-	    }
-	    return true;
-	}
 
 	void display(Canvas canvas) {
 		canvas.drawRect(xloc, yloc, xloc + 30, yloc + 15, paint);
